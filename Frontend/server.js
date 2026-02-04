@@ -1,14 +1,13 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const path = require('path'); // Path modulini qo'shdik
+const path = require('path'); 
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// --- MANA SHU YERGA QO'SHASIZ ---
-// Bu qator "public" papkasidagi index.html va boshqa fayllarni brauzerga ko'rsatadi
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 let waitingUser = null;
@@ -20,7 +19,7 @@ io.on('connection', (socket) => {
         socket.emit('chatStart', { partnerId: waitingUser.id });
         waitingUser.emit('chatStart', { partnerId: socket.id });
 
-        // Xabarlarni bir-biriga yo'naltirish
+        
         socket.on('privateMessage', (msg) => {
             waitingUser.emit('message', msg);
         });
@@ -31,15 +30,15 @@ io.on('connection', (socket) => {
         waitingUser = null;
     } else {
         waitingUser = socket;
-        socket.emit('waiting', 'Sherik qidirilmoqda...');
+        socket.emit('waiting', 'shlyuxa/yobircha qidirilmoqda...');
     }
 
     socket.on('disconnect', () => {
         if (waitingUser === socket) waitingUser = null;
-        console.log('Foydalanuvchi chiqib ketdi');
+        console.log('gandon  chisat  qildi');
     });
 });
 
 server.listen(3000, '0.0.0.0', () => {
-    console.log('Server 3000-portda muvaffaqiyatli ishga tushdi');
+    console.log('Server 3000-portda  ishga tushdi');
 });
