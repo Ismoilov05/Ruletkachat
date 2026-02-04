@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Random Chat</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f0f2f5; }
+        #messages { width: 300px; height: 400px; border: 1px solid #ccc; overflow-y: scroll; background: white; padding: 10px; border-radius: 8px; }
+        .input-area { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Random Chat 🎲</h2>
+    <div id="status">Ulanmoqda...</div>
+    <div id="messages"></div>
+    <div class="input-area">
+        <input type="text" id="msgInput" placeholder="Xabar yozing...">
+        <button onclick="sendMessage()">Jo'natish</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const messagesDiv = document.getElementById('messages');
+        const statusDiv = document.getElementById('status');
+
+        socket.on('waiting', (msg) => { statusDiv.innerText = msg; });
+        
+        socket.on('chatStart', (data) => {
+            statusDiv.innerText = "Siz juftlikka biriktirildingiz!";
+            messagesDiv.innerHTML += `<p><i>Tizim: Suhbat boshlandi!</i></p>`;
+        });
+
+        socket.on('message', (msg) => {
+            messagesDiv.innerHTML += `<p><b>Sherik:</b> ${msg}</p>`;
+        });
+
+        function sendMessage() {
+            const val = document.getElementById('msgInput').value;
+            socket.emit('privateMessage', val);
+            messagesDiv.innerHTML += `<p><b>Siz:</b> ${val}</p>`;
+            document.getElementById('msgInput').value = '';
+        }
+    </script>
+</body>
+</html>
